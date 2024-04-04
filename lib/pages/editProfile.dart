@@ -206,11 +206,12 @@ class _EditProfileActivityState extends State<EditProfile> {
                               else // Show user's image from network if available
                                 Image.network(
                                   userDetails != null &&
-                                          userDetails.imagePath != null
+                                          userDetails.imagePath != null &&
+                                          userDetails.imagePath.isNotEmpty
                                       ? '${dotenv.env['API_URL_BASE']}${userDetails.imagePath}'
-                                      : 'lib/assets/img/default.jpeg', // Provide a default image path if userDetails or imagePath is null
-                                  width: 160,
-                                  height: 160,
+                                      : '${dotenv.env['API_URL_BASE']}/media/images/default.jpeg', // Provide a default image path if userDetails or imagePath is null or empty
+                                  width: 100,
+                                  height: 100,
                                   fit: BoxFit.cover,
                                 ),
                               Positioned(
@@ -218,7 +219,8 @@ class _EditProfileActivityState extends State<EditProfile> {
                                 right: 0,
                                 child: Icon(
                                   Icons.camera_alt,
-                                  color: Colors.white,
+                                  color: Colors.pinkAccent,
+                                  size: 40,
                                 ),
                               ),
                             ],
