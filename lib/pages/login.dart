@@ -6,6 +6,7 @@ import 'package:phone_app/components/text_tap_button.dart';
 import 'package:phone_app/utilities/constants.dart';
 import 'package:phone_app/pages/signup.dart';
 import '../components/login_signup_background.dart';
+import '../services/get_current_user_details.dart';
 
 void main() {
   runApp(LoginApp());
@@ -60,6 +61,11 @@ class LoginPage extends StatelessWidget {
                     BottomButton(
                         onTap: () {
                           // login logic
+                          // TODO: login details authorization
+                          // if the authorization process confirms the email/password
+                          // include the below in the logic
+                          UserDetailsFetcher.fetchUserDetails(context, 'john');
+                          //
                           Navigator.push(
                             context,
                             MaterialPageRoute(

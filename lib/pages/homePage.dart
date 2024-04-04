@@ -18,6 +18,7 @@ import 'MyActivity.dart';
 import 'package:phone_app/pages/settings.dart';
 import 'my_account.dart';
 import '../models/user_details.dart';
+import '../services/get_current_user_details.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,87 +55,7 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
-    _getUserDetails2(context);
     _currentIndex = widget.initialIndex;
-  }
-
-  // TODO: 2. later, move this function to login page, call this function after email/password auth was successful
-  // get the current user data:
-  Future<void> _getUserDetails2(BuildContext context) async {
-    // Load the .env file
-    await dotenv.load(fileName: ".env");
-
-    // Retrieve the base URL from the environment variables
-    String? baseURL = dotenv.env['API_URL_BASE'];
-
-    // Check if the base URL is defined
-    if (baseURL != null) {
-      // Construct the complete URL by concatenating with the endpoint
-      //TODO: here we hardcoded 'john' but it needs to be passed from login, or move this setting function to Login
-      String apiUrl = '$baseURL/update/john/';
-
-      try {
-        // Send the GET request
-        final response = await http.get(
-          Uri.parse(apiUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        // Handle the response
-        if (response.statusCode == 200) {
-          // Parse the response JSON
-          final responseData = jsonDecode(response.body);
-
-          // Fetch and update the image
-          String? imagePath = responseData['image'];
-
-          if (imagePath != null) {
-            // Add the base URL of your Django server to the image path
-            String imageUrl = '$baseURL$imagePath';
-
-            // Download the image
-            var response = await http.get(Uri.parse(imageUrl));
-            if (response.statusCode == 200) {
-              // Save the image to a temporary file
-              final tempDir = await getTemporaryDirectory();
-              final file = File('${tempDir.path}/temp_image.jpg');
-              await file.writeAsBytes(response.bodyBytes);
-            }
-            print('image path: $imageUrl');
-          }
-
-          // Print or process the user details
-          print('User details: $responseData');
-
-          // Create a UserDetails object
-          UserDetails userDetails = UserDetails(
-            name: responseData['name'] ?? '',
-            surname: responseData['surname'] ?? '',
-            username: responseData['username'] ?? '',
-            email: responseData['email'] ?? '',
-            dob: (responseData['dob'] ?? ''),
-            phoneNumber: responseData['phone_number'] ?? '',
-            imagePath: imagePath ?? '',
-            // Add constructor parameters for additional fields
-          );
-
-          // Set user details in provider
-          Provider.of<UserDataProvider>(context, listen: false)
-              .setUserDetails(userDetails);
-        } else {
-          // Handle errors here
-          print('Failed to get user details: ${response.statusCode}');
-        }
-      } catch (e) {
-        // Handle network errors here
-        print('Error: $e');
-      }
-    } else {
-      // Print a message if BASE_URL is not defined in .env
-      print('BASE_URL is not defined in .env file');
-    }
   }
 
   Future<void> fetchData() async {

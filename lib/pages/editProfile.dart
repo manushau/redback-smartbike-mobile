@@ -10,7 +10,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../components/user_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
 import '../models/user_details.dart';
 import '../provider/data_provider.dart';
 
@@ -80,91 +79,6 @@ class _EditProfileActivityState extends State<EditProfile> {
     }
   }
 
-  Future<void> _getUserDetails2() async {
-    // Access the user details from the provider's state
-    UserDetails? userDetails =
-        Provider.of<UserDataProvider>(context, listen: false).userDetails;
-
-    // Load the .env file
-    await dotenv.load(fileName: ".env");
-
-    // Retrieve the base URL from the environment variables
-    String? baseURL = dotenv.env['API_URL_BASE'];
-
-    //TODO: this email should be passed from login details like avail globally
-    _emailController.text = 'john';
-
-    // Check if the base URL is defined
-    if (baseURL != null) {
-      // Construct the complete URL by concatenating with the endpoint
-      String apiUrl = '$baseURL/update/${_emailController.text}/';
-
-      try {
-        // Send the GET request
-        final response = await http.get(
-          Uri.parse(apiUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        // Handle the response
-        if (response.statusCode == 200) {
-          // Parse the response JSON
-          final responseData = jsonDecode(response.body);
-
-          // Update user details text fields
-          setState(() {
-            _firstNameController.text = responseData['name'] ?? '';
-            _lastNameController.text = responseData['surname'] ?? '';
-            _usernameController.text = responseData['username'] ?? '';
-            _dobController.text = responseData['dob'] ?? '';
-            _phoneNoController.text = responseData['phone_number'] ?? '';
-          });
-
-          // Fetch and update the image
-          String? imagePath = responseData['image'];
-
-          if (imagePath != null) {
-            // Add the base URL of your Django server to the image path
-            String imageUrl = '$baseURL$imagePath';
-
-            // Download the image
-            var response = await http.get(Uri.parse(imageUrl));
-            if (response.statusCode == 200) {
-              // Save the image to a temporary file
-              final tempDir = await getTemporaryDirectory();
-              final file = File('${tempDir.path}/temp_image.jpg');
-              await file.writeAsBytes(response.bodyBytes);
-
-              // Update the _imageFile
-              setState(() {
-                _imageFile = PickedFile(file.path);
-              });
-            }
-          } else {
-            // If image path is null, set _imageFile to null
-            setState(() {
-              _imageFile = null;
-            });
-          }
-
-          // Print or process the user details
-          print('User details: $responseData');
-        } else {
-          // Handle errors here
-          print('Failed to get user details: ${response.statusCode}');
-        }
-      } catch (e) {
-        // Handle network errors here
-        print('Error: $e');
-      }
-    } else {
-      // Print a message if BASE_URL is not defined in .env
-      print('BASE_URL is not defined in .env file');
-    }
-  }
-
   Future<void> _saveProfile() async {
     // Load the .env file
     await dotenv.load(fileName: ".env");
@@ -192,6 +106,19 @@ class _EditProfileActivityState extends State<EditProfile> {
             .add(await http.MultipartFile.fromPath('image', _imageFile!.path));
       }
 
+      // create the full path for the image
+      String? imagePath;
+      if (_imageFile != null) {
+        // Extract the file name from the path
+        String fileName = _imageFile!.path.split('/').last;
+
+        // Construct the complete image path by combining the base URL and the file name
+        imagePath = '/media/images/$fileName';
+      } else {
+        // If _imageFile is null, set imagePath to an empty string or null, depending on your requirements
+        imagePath = ''; // or null
+      }
+
       try {
         // Send the PUT request
         var streamedResponse = await request.send();
@@ -201,6 +128,19 @@ class _EditProfileActivityState extends State<EditProfile> {
           // Handle success here if needed
           print('Profile updated successfully');
           // Update user details in provider
+          UserDetails updatedUserDetails = UserDetails(
+            name: _firstNameController.text,
+            surname: _lastNameController.text,
+            username: _usernameController.text,
+            email: _emailController.text,
+            dob: _dobController.text,
+            phoneNumber: _phoneNoController.text,
+            imagePath: imagePath, // Update with image path if needed
+          );
+          if (mounted) {
+            Provider.of<UserDataProvider>(context, listen: false)
+                .setUserDetails(updatedUserDetails);
+          }
         } else {
           // Handle errors here
           print('Failed to update profile: ${streamedResponse.reasonPhrase}');
