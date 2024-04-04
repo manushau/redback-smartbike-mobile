@@ -55,6 +55,8 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
+    // TODO: it needs to be passed here to initState
+    UserDetailsFetcher.fetchUserDetails(context, 'john');
     _currentIndex = widget.initialIndex;
   }
 

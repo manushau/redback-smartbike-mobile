@@ -64,7 +64,7 @@ class LoginPage extends StatelessWidget {
                           // TODO: login details authorization
                           // if the authorization process confirms the email/password
                           // include the below in the logic
-                          UserDetailsFetcher.fetchUserDetails(context, 'john');
+                          // UserDetailsFetcher.fetchUserDetails(context, 'john');
                           //
                           Navigator.push(
                             context,
