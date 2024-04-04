@@ -41,7 +41,7 @@ class UserDetailsFetcher {
           // Fetch and update the image
           String? imagePath = responseData['image'];
 
-          if (imagePath != null) {
+          if (imagePath != null && imagePath.isNotEmpty) {
             // Add the base URL of your Django server to the image path
             String imageUrl = '$baseURL$imagePath';
 
@@ -53,7 +53,13 @@ class UserDetailsFetcher {
               final file = File('${tempDir.path}/temp_image.jpg');
               await file.writeAsBytes(response.bodyBytes);
             }
+            if (response.statusCode == 404) {
+              imagePath = '/media/images/default.jpeg';
+            }
             print('image path: $imageUrl');
+          } else {
+            // Assign default image path if imagePath is null or empty
+            imagePath = '/media/images/default.jpeg';
           }
 
           // Print or process the user details
