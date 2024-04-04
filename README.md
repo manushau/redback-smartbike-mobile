@@ -1,16 +1,30 @@
-# vcapp
+SETUP:
 
-A new Flutter project.
+1. Open android studio
 
-## Getting Started
+2. File -> New -> Project from Version Control
 
-This project is a starting point for a Flutter application.
+3. paste the URL: https://github.com/alexbaar/app.git
+   choose where to save the project on your computer
 
-A few resources to get you started if this is your first Flutter project:
+4. Click clone
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+5. add a '.env' file in the root project directory
+   inside the file add:
+   # URLs
+   API_URL_BASE = http://<your_machine_network_address>:8000  , for example:
+   API_URL_BASE = http://192.168.3.103:8000
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+6. pubspec.yaml -> click on 'pub get'
+
+7. VS Code -> run your backend     https://github.com/alexbaar/app_Backend_
+
+8. Android Studio -> run the project
+
+
+
+SAVE CHANGES: save only the fully working feature that is completed
+
+Android Studio -> Git -> commit    commit ... commit
+Android Studio -> Git -> push      commit ... commit
+
