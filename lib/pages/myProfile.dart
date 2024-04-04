@@ -61,19 +61,16 @@ class EditProfileActivity extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const SizedBox(height: 50),
-                            userDetails != null && userDetails.imagePath != null
-                                ? Image.network(
-                                    '${dotenv.env['API_URL_BASE']}${userDetails.imagePath}',
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'lib/assets/img/default.jpeg',
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  ),
+                            Image.network(
+                              userDetails != null &&
+                                      userDetails.imagePath != null &&
+                                      userDetails.imagePath.isNotEmpty
+                                  ? '${dotenv.env['API_URL_BASE']}${userDetails.imagePath}'
+                                  : '${dotenv.env['API_URL_BASE']}/media/images/default.jpeg', // Provide a default image path if userDetails or imagePath is null or empty
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
                             Text(
                               userDetails?.username ??
                                   '', // Use null-aware operator to prevent null exception
