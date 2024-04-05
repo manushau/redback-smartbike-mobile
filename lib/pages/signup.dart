@@ -23,34 +23,116 @@ class SignUpApp extends StatelessWidget {
   }
 }
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
+  @override
+  _SignUpPageState createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 
-  // Function to make a POST request to your API
-  Future<void> signUp() async {
-    await dotenv.load(fileName: ".env");
-// Retrieve the API URL from the environment variables
-    String? baseURL = dotenv.env[
-        'API_URL_BASE']; // only the partial, network specific to each team member
-    final apiUrl = '$baseURL/signup/';
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      body: {
-        'user': usernameController.text,
-        'email': emailController.text,
-        'password': passwordController.text
+  final _formKey = GlobalKey<FormState>();
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+    String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+    RegExp regExp = RegExp(emailPattern);
+    if (!regExp.hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    String pattern = r'^(?=.*?[!@#$%^&*(),.?":{}|<>])';
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return 'Password must contain at least one special character';
+    }
+    return null;
+  }
+
+  String? validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your username';
+    }
+    if (value.length < 5) {
+      return 'Username must be at least 10 characters long';
+    }
+    return null;
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showPasswordRequirementsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Password Requirements'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Minimum 8 characters'),
+              Text('At least 1 uppercase letter'),
+              Text('At least 1 symbol'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
       },
     );
+  }
 
-    if (response.statusCode == 302) {
-      // Success! You can handle the response here if needed.
-      print('Sign-up successful!');
-    } else {
-      // Error handling here, you can show an error message to the user.
-      print('Sign-up failed. Status code: ${response.statusCode}');
+  // Function to make a POST request to your API
+
+  Future<void> signUp() async {
+    if (_formKey.currentState!.validate()) {
+      await dotenv.load(fileName: ".env");
+// Retrieve the API URL from the environment variables
+      String? baseURL = dotenv.env[
+          'API_URL_BASE']; // only the partial, network specific to each team member
+      final apiUrl = '$baseURL/signup/';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'user': usernameController.text,
+          'email': emailController.text,
+          'password': passwordController.text
+        },
+      );
+
+      if (response.statusCode == 302) {
+        print('Sign-up successful!');
+      } else {
+        print('Sign-up failed. Status code: ${response.statusCode}');
+      }
     }
   }
 
@@ -62,25 +144,90 @@ class SignUpPage extends StatelessWidget {
         child: CustomGradientContainerFull(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(height: 15.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      height: 16,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 15.0),
+                  Center(
+                    child: Image(
+                      image: AssetImage('lib/assets/redbacklogo.png'),
+                      height: 120,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Image(
-                          image: AssetImage('lib/assets/redbacklogo.png'),
-                          height: 70,
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Sign Up',
+                    style: kRedbackTextMain,
+                  ),
+                  SizedBox(height: 32),
+                  InputTextField(
+                    buttonText: 'username',
+                    fieldController: usernameController,
+                    validate: validateUsername,
+                  ),
+                  SizedBox(height: 15),
+                  InputTextField(
+                    buttonText: 'email',
+                    fieldController: emailController,
+                    validate: validateEmail,
+                  ),
+                  SizedBox(height: 15),
+                  InputTextField(
+                    buttonText: 'password',
+                    fieldController: passwordController,
+                    enableToggle: true,
+                    validate: validatePassword,
+                  ),
+                  SizedBox(height: 15),
+                  InputTextField(
+                    buttonText: 'confirm password',
+                    fieldController: confirmPasswordController,
+                    enableToggle: true,
+                    validate: (value) {
+                      if (value != passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 15),
+                  TextButton(
+                    onPressed: _showPasswordRequirementsDialog,
+                    child: Text(
+                      'Password Requirements',
+                      style: TextStyle(
+                        color: Colors.black,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: BottomButton(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              signUp();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              );
+                            } else {
+                              _showErrorSnackbar('Please correct the errors');
+                            }
+                          },
+                          buttonText: 'Sign Up',
                         ),
-                        TextTapButton(
+                      ),
+                      SizedBox(width: 10), // Add some spacing
+                      Expanded(
+                        child: BottomButton(
                           onTap: () {
                             Navigator.push(
                               context,
@@ -89,64 +236,35 @@ class SignUpPage extends StatelessWidget {
                               ),
                             );
                           },
-                          buttonTextActive: 'Log In',
+                          buttonText: 'Log In',
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 22),
-                Text(
-                  'Sign Up',
-                  style: kRedbackTextMain,
-                ),
-                SizedBox(height: 32),
-                InputTextField(
-                  buttonText: 'username',
-                  fieldController: usernameController,
-                  // don't toggle, just visible
-                ),
-                SizedBox(height: 15),
-                InputTextField(
-                  buttonText: 'email',
-                  fieldController: emailController,
-                  // don't toggle, just visible
-                ),
-                SizedBox(height: 15),
-                InputTextField(
-                  buttonText: 'password',
-                  fieldController: passwordController,
-                  enableToggle: true, // toggle visibility
-                ),
-                SizedBox(height: 15),
-                InputTextField(
-                  buttonText: 'confirm password',
-                  fieldController: confirmPasswordController,
-                  enableToggle: true, // toggle visibility
-                ),
-                SizedBox(height: 60),
-                BottomButton(
-                    onTap: () {
-                      signUp();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    },
-                    buttonText: 'Sign Up'),
-                SizedBox(height: 26),
-                TextTapButton(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginPage(),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account?  ',
+                        style: TextStyle(
+                          color: Colors.black,
                         ),
-                      );
-                    },
-                    buttonTextStatic: 'Already have an account?  ',
-                    buttonTextActive: 'Log In'),
-              ],
+                      ),
+                      TextTapButton(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
+                        },
+                        buttonTextActive: 'Click',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

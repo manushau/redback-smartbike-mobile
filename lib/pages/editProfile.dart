@@ -163,6 +163,7 @@ class _EditProfileActivityState extends State<EditProfile> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -182,110 +183,117 @@ class _EditProfileActivityState extends State<EditProfile> {
               children: [
                 Container(
                   child: Center(
-                    child: Consumer<UserDataProvider>(
-                      builder: (context, userProvider, _) {
-                        final userDetails = userProvider.userDetails;
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 50),
-                            InkWell(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (builder) => bottomSheet(context),
-                                );
-                              },
-                              child: Stack(
+                    child: Selector<UserDataProvider, UserDetails?>(
+                      selector: (context, userProvider) =>
+                          userProvider.userDetails,
+                      builder: (context, userDetails, _) {
+                        print(
+                            '${dotenv.env['API_URL_BASE']}${userDetails?.imagePath}');
+                        if (userDetails != null) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 50),
+                              InkWell(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (builder) => bottomSheet(context),
+                                  );
+                                },
+                                child: Stack(
+                                  children: [
+                                    if (_imageFile != null)
+                                      Image.file(
+                                        File(_imageFile!.path),
+                                        width: 160,
+                                        height: 160,
+                                        fit: BoxFit.cover,
+                                      )
+                                    else
+                                      Image.network(
+                                        userDetails.imagePath != null &&
+                                                userDetails.imagePath.isNotEmpty
+                                            ? '${dotenv.env['API_URL_BASE']}${userDetails.imagePath}'
+                                            : '${dotenv.env['API_URL_BASE']}/media/images/default.jpeg',
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.pinkAccent,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(30.0),
+                                child: Column(
+                                  children: [
+                                    // Form Fields
+                                    _buildFormField(
+                                      'First Name',
+                                      _firstNameController,
+                                    ),
+                                    _buildFormField(
+                                      'Last Name',
+                                      _lastNameController,
+                                    ),
+                                    _buildFormField(
+                                      'Username',
+                                      _usernameController,
+                                      enableEditing: false,
+                                    ),
+                                    _buildFormField(
+                                      'Email',
+                                      _emailController,
+                                      enableEditing: false,
+                                    ),
+                                    _buildFormField(
+                                      'Date of Birth (yyyy-mm-dd)',
+                                      _dobController,
+                                    ),
+                                    _buildFormField(
+                                      'Phone Number',
+                                      _phoneNoController,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if (_imageFile != null)
-                                    Image.file(
-                                      File(_imageFile!.path),
-                                      width: 160,
-                                      height: 160,
-                                      fit: BoxFit.cover,
-                                    )
-                                  else
-                                    Image.network(
-                                      userDetails != null &&
-                                              userDetails.imagePath != null &&
-                                              userDetails.imagePath.isNotEmpty
-                                          ? '${dotenv.env['API_URL_BASE']}${userDetails.imagePath}'
-                                          : '${dotenv.env['API_URL_BASE']}/media/images/default.jpeg',
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.pinkAccent,
-                                      size: 40,
-                                    ),
+                                  BottomButton(
+                                    solidColor: false,
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    buttonText: 'Cancel',
+                                  ),
+                                  SizedBox(width: 20),
+                                  BottomButton(
+                                    onTap: () async {
+                                      await _saveProfile();
+                                      Navigator.of(context).pop();
+                                    },
+                                    buttonText: 'Save',
                                   ),
                                 ],
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(30.0),
-                              child: Column(
-                                children: [
-                                  // Form Fields
-                                  _buildFormField(
-                                    'First Name',
-                                    _firstNameController,
-                                  ),
-                                  _buildFormField(
-                                    'Last Name',
-                                    _lastNameController,
-                                  ),
-                                  _buildFormField(
-                                    'Username',
-                                    _usernameController,
-                                    enableEditing: false,
-                                  ),
-                                  _buildFormField(
-                                    'Email',
-                                    _emailController,
-                                    enableEditing: false,
-                                  ),
-                                  _buildFormField(
-                                    'Date of Birth (yyyy-mm-dd)',
-                                    _dobController,
-                                  ),
-                                  _buildFormField(
-                                    'Phone Number',
-                                    _phoneNoController,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                BottomButton(
-                                  solidColor: false,
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  buttonText: 'Cancel',
-                                ),
-                                SizedBox(width: 20),
-                                BottomButton(
-                                  onTap: () {
-                                    _saveProfile();
-                                    Navigator.of(context).pop();
-                                  },
-                                  buttonText: 'Save',
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 30),
-                          ],
-                        );
+                              const SizedBox(height: 30),
+                            ],
+                          );
+                        } else {
+                          // Handle when userDetails is null
+                          return CircularProgressIndicator(); // Placeholder until data is loaded
+                        }
                       },
                     ),
                   ),

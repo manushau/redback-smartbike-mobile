@@ -49,8 +49,11 @@ class UserDetailsFetcher {
             var response = await http.get(Uri.parse(imageUrl));
             if (response.statusCode == 200) {
               // Save the image to a temporary file
+              String fileName = imageUrl.split('/').last;
+
               final tempDir = await getTemporaryDirectory();
-              final file = File('${tempDir.path}/temp_image.jpg');
+
+              final file = File('${tempDir.path}/$fileName');
               await file.writeAsBytes(response.bodyBytes);
             }
             if (response.statusCode == 404) {

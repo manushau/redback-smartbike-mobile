@@ -46,9 +46,11 @@ class EditProfileActivity extends StatelessWidget {
           )
         ],
       ),
+      // this consumer listens to changes made to user details (provider) and if any were made, it updates
       body: Consumer<UserDataProvider>(
         builder: (context, userProvider, _) {
           final userDetails = userProvider.userDetails;
+          print('${dotenv.env['API_URL_BASE']}${userDetails?.imagePath}');
 
           return Scaffold(
             body: SingleChildScrollView(
@@ -197,12 +199,3 @@ class EditProfileActivity extends StatelessWidget {
     );
   }
 }
-
-/*
-userImage: userDetails?.imagePath != null
-                              ? FileImage(File(userDetails!.imagePath))
-                                  as ImageProvider<Object>
-                              : AssetImage('lib/assets/img/default.jpeg')
-                                  as ImageProvider<Object>,
-
-*/

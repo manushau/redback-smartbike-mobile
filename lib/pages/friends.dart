@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar.dart';
 import '../components/main_app_background.dart';
+import '../models/user_details.dart';
 import '../utilities/constants.dart';
 import 'homePage.dart';
 import 'settings.dart';
@@ -15,6 +17,10 @@ class MyFriendScreen extends StatefulWidget {
   @override
   State<MyFriendScreen> createState() => _MyFriendScreenState();
 }
+
+// TODO: for this you need to be able to browse all names except for yours from backend acc_details table
+// TODO: you also need to construct a new table in backend to store the usernames and emails for current user's friends and your email for reference
+// TODO: then when you send a GET request and other, you can filter that table with current_user's email (from flutter provider) and get the list of friends
 
 class Friend {
   final String name;
@@ -44,7 +50,7 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
     await dotenv.load(fileName: ".env");
 
     // Retrieve the base URL from the environment variables
-    String? baseURL = dotenv.env['BASE_URL'];
+    String? baseURL = dotenv.env['API_URL_BASE'];
 
     // Check if the base URL is defined
     if (baseURL != null) {
@@ -102,7 +108,9 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => HomePage(title: 'Home Page'),
+                builder: (context) => HomePage(
+                  title: 'Home Page',
+                ),
               ),
             );
           },
@@ -200,7 +208,9 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(title: "Home Page"),
+                    builder: (context) => HomePage(
+                      title: "Home Page",
+                    ),
                   ),
                 );
                 break;

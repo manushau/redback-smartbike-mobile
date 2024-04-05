@@ -1,11 +1,11 @@
 class UserDetails {
-  final String name;
-  final String surname;
-  final String username;
-  final String email;
-  final String dob;
-  final String phoneNumber;
-  final String imagePath;
+  String name;
+  String surname;
+  String username;
+  String email;
+  String dob;
+  String phoneNumber;
+  String imagePath;
 
   UserDetails({
     required this.name,
@@ -16,4 +16,9 @@ class UserDetails {
     required this.phoneNumber,
     required this.imagePath,
   });
+
+  // update email
+  void updateEmail(String newEmail) {
+    email = newEmail;
+  }
 }
