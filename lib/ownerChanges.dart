@@ -1,8 +1,8 @@
 // owner changed sth
 
-// chnged again
+// changed again
 
-// charlie added
+// charlie added again
 
 //owner changed again
 
