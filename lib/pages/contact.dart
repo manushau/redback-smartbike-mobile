@@ -1,11 +1,110 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/bottom_button.dart';
+import 'package:phone_app/components/input_text_field.dart';
+import 'package:phone_app/components/main_app_background.dart';
 import 'package:phone_app/utilities/constants.dart';
+import 'package:provider/provider.dart';
+import '../components/dropdown_choice.dart';
+import '../models/user_details.dart';
+import '../provider/data_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
-import '../components/input_text_field.dart';
-import '../components/main_app_background.dart';
+class ContactUsScreen extends StatefulWidget {
+  @override
+  _ContactUsScreenState createState() => _ContactUsScreenState();
+}
 
-class ContactUsScreen extends StatelessWidget {
+class _ContactUsScreenState extends State<ContactUsScreen> {
+  String _subject = '';
+  String _message = '';
+  String? selectedValue = null;
+  final _dropdownFormKey = GlobalKey<FormState>();
+
+  // each thread of help messages will have the same UUID number, so that they can be easily
+  // fetched for Admin, and turned their status to 'resolved' when case is closed
+  late String _threadNumber;
+
+  // list of topics for help
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      DropdownMenuItem(
+        child: Text(
+          'General Inquiry',
+          style: kSimpleTextPurple,
+        ),
+        value: 'General Inquiry',
+      ),
+      DropdownMenuItem(
+          child: Text(
+            'Technical Support',
+            style: kSimpleTextPurple,
+          ),
+          value: 'Technical Support'),
+      DropdownMenuItem(
+          child: Text(
+            'Billing Issue',
+            style: kSimpleTextPurple,
+          ),
+          value: 'Billing Issue'),
+      DropdownMenuItem(
+          child: Text(
+            'Other',
+            style: kSimpleTextPurple,
+          ),
+          value: 'Other'),
+    ];
+    return menuItems;
+  }
+
+  // validate fields
+  bool validateFields() {
+    List<String> errorMessages = [];
+    // separate error msg for each field so that the user would know what to amend
+    if (_subject.isEmpty) {
+      errorMessages.add('Please provide a subject.');
+    }
+    if (_message.isEmpty) {
+      errorMessages.add('Please write a message.');
+    }
+    if (selectedValue == null) {
+      errorMessages.add('Please choose a topic.');
+    }
+    // if any errors are present, combine the final error msg
+    if (errorMessages.isNotEmpty) {
+      String errorMessage = errorMessages.join('\n');
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Missing Information'),
+          content: Text(errorMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return false; // Validation failed
+    }
+    return true; // Validation passed
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _threadNumber = generateUniqueId();
+  }
+
+  String generateUniqueId() {
+    var uuid = Uuid();
+    return uuid.v4();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,26 +143,55 @@ class ContactUsScreen extends StatelessWidget {
                 SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                  child: Container(
+                  child: Form(
+                    key: _dropdownFormKey,
+                    child: Container(
                       margin: EdgeInsets.only(bottom: 16),
                       child: InputTextField(
                         buttonText: 'Subject',
-                      )),
+                        onChangedDo: (value) {
+                          setState(() {
+                            _subject = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                  child: DropdownChoice(
+                    onChange: (String? newValue) {
+                      setState(() {
+                        selectedValue = newValue!;
+                      });
+                    },
+                    items: dropdownItems,
+                    selectedValue: selectedValue,
+                    helperText: 'Choose topic',
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                   child: Container(
                     child: InputTextField(
                       buttonText: 'Message',
                       height: 200,
+                      onChangedDo: (value) {
+                        setState(() {
+                          _message = value!;
+                        });
+                      },
                     ),
                   ),
                 ),
                 SizedBox(height: 50),
                 BottomButton(
                   onTap: () {
-                    //TODO: logic for sending messages to support
+                    if (validateFields()) {
+                      sendContactUsForm();
+                      Navigator.of(context).pop();
+                    }
                   },
                   buttonText: 'Send',
                 ),
@@ -74,5 +202,66 @@ class ContactUsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Send a POST request to Django
+  void sendContactUsForm() async {
+    // get current user data (we need email)
+    UserDetails? userDetails =
+        Provider.of<UserDataProvider>(context, listen: false).userDetails;
+    if (userDetails == null) {
+      // TODO: Handle error or show message that user details are not available
+      return;
+    }
+
+    // retrieve the base URL from the environment variables
+    await dotenv.load(fileName: ".env");
+    String? baseURL = dotenv.env['API_URL_BASE'];
+
+    if (baseURL != null) {
+      String apiUrl = '$baseURL/messages/';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode({
+          'thread_number':
+              _threadNumber, // UUID generated in Flutter; each thread of messages (case)should have one, same UUID
+          'email': userDetails.email,
+          'subject': _subject,
+          'topic': selectedValue,
+          'message_body': _message,
+          'timestamp_sent': DateTime.now().toIso8601String(),
+          'timestamp_read': DateTime.now().toIso8601String(),
+          'is_read': false,
+          'status': 'Open',
+          'actions': 'Awaiting Review',
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (mounted) {
+        // make sure we send the msg first, then dispose of widget
+        if (response.statusCode == 201) {
+          print('Message sent successfully');
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Message Sent'),
+              content: Text('Message sent successfully'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          print('Error sending message');
+        }
+      }
+    } else {
+      print('BASE_URL is not defined in .env file');
+    }
   }
 }

@@ -5,7 +5,7 @@ const kLoginRegisterBtnColour = Color(0xFF370E4A);
 const kLoginRegisterBtnColourOPAC = Color.fromRGBO(55, 14, 74, 0.3);
 const kAppBackgroundColor = Color(0xffB4C292);
 const kAppNavigBarColour = Color(0xff736F4E);
-const kSimpleBtnColour = Color(0xffEEB4B3);
+const kSimpleBtnColour = Color(0xffFDBCB4);
 const kFillInText = Colors.white70;
 const kHomeBtnColours = Color(0xFF370E4A);
 const kHomeBtnColoursOpaQue = Color.fromRGBO(55, 14, 74, 0.4);
@@ -63,8 +63,8 @@ const kSimpleTextWhite = TextStyle(
 );
 
 const kSimpleTextPurple = TextStyle(
-  fontSize: 14,
-  fontWeight: FontWeight.normal,
+  fontSize: 16,
+  fontWeight: FontWeight.w600,
   color: kLoginRegisterBtnColour,
 );
 

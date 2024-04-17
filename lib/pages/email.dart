@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:phone_app/utilities/constants.dart';
+import 'package:provider/provider.dart';
 
 import '../components/bottom_button.dart';
 import '../components/main_app_background.dart';
+import '../models/user_details.dart';
+import '../provider/data_provider.dart';
+
+// TODO: figure out what possibly can we use this section for. I was here originally, but I deleted
+// TODO: its navigation path from Settings as it did not offer enough functionality
+// TODO: since you cannot upload email or username once the account is created, you can offer to add a backup email
+// TODO: for MFA or sth
 
 class EmailScreen extends StatefulWidget {
   @override
@@ -11,6 +19,19 @@ class EmailScreen extends StatefulWidget {
 
 class _EmailScreenState extends State<EmailScreen> {
   List<String> registeredEmails = [];
+  @override
+  void initState() {
+    super.initState();
+    // get current user data (we need email)
+    UserDetails? userDetails =
+        Provider.of<UserDataProvider>(context, listen: false).userDetails;
+    String userEmail = userDetails!.email.toString();
+
+    // only add id the list doesn't have it yet
+    if (!registeredEmails.contains(userEmail)) {
+      registeredEmails.add(userEmail);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +61,20 @@ class _EmailScreenState extends State<EmailScreen> {
             ),
             const SizedBox(height: 30),
             Expanded(
-              child: ListView.builder(
-                itemCount: registeredEmails.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      registeredEmails[index],
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: registeredEmails.map((email) {
+                    return ListTile(
+                      title: Text(
+                        email,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             BottomButton(

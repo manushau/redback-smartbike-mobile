@@ -4,6 +4,7 @@ import 'package:phone_app/utilities/constants.dart';
 class InputTextField extends StatefulWidget {
   // custom constructor
   InputTextField({
+    this.onChangedDo,
     required this.buttonText,
     this.fieldController,
     this.height,
@@ -12,6 +13,7 @@ class InputTextField extends StatefulWidget {
   }) : obscureText =
             enableToggle ? true : false; //  obscureText based on enableToggle
 
+  final void Function(String?)? onChangedDo; // optional
   final String buttonText;
   final TextEditingController? fieldController;
   final double? height;
@@ -43,10 +45,12 @@ class _InputTextFieldState extends State<InputTextField> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: TextFormField(
+        onChanged: widget.onChangedDo,
         textAlign: TextAlign.left,
         controller: widget.fieldController,
         obscureText: widget.obscureText,
         validator: widget.validate,
+        style: kSimpleTextPurple,
         decoration: InputDecoration(
           hintText: widget.buttonText,
           hintStyle: kSubSubTitlePurple,

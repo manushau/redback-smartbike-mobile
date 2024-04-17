@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phone_app/pages/login.dart';
+import 'package:phone_app/pages/message_center.dart';
 import 'package:phone_app/pages/privacy.dart';
 import 'package:phone_app/pages/terminate_account.dart';
 import 'package:phone_app/utilities/constants.dart';
@@ -8,7 +9,7 @@ import '../components/bottom_navigation_bar.dart';
 import '../components/main_app_background.dart';
 import 'email.dart';
 import 'my_account.dart';
-
+import 'message_center.dart';
 import 'Friends.dart';
 import 'homePage.dart';
 import 'contact.dart';
@@ -66,6 +67,20 @@ class _Setting extends State<Setting> {
                     builder: (context) =>
                         HomePage(title: "Home Page", initialIndex: 2),
                   ));
+                },
+                arrowOptional: Icons.arrow_forward,
+              ),
+              SizedBox(height: 10),
+              AccountContainer(
+                fieldName: 'Message Center',
+                typeIcon: Icons.message_sharp,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MessageCenter(),
+                    ),
+                  );
                 },
                 arrowOptional: Icons.arrow_forward,
               ),

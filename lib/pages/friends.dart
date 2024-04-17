@@ -157,7 +157,7 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: DropdownButton<String>(
                             elevation: 10,
-                            iconSize: 50.0,
+                            iconSize: 30.0,
                             iconDisabledColor:
                                 kLoginRegisterBtnColour.withOpacity(0.5),
                             iconEnabledColor: kLoginRegisterBtnColour,
