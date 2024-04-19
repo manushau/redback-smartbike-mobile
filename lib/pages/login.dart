@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/user_details.dart';
 import '../provider/data_provider.dart';
 import '../services/get_current_user_details.dart';
-import 'homePage.dart';
+import 'home_page.dart';
 import 'package:phone_app/components/bottom_button.dart';
 import 'package:phone_app/components/text_tap_button.dart';
 import 'package:phone_app/utilities/constants.dart';

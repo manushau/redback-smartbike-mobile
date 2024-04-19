@@ -5,7 +5,8 @@ import '../components/bottom_navigation_bar.dart';
 import '../components/main_app_background.dart';
 import '../models/user_details.dart';
 import '../utilities/constants.dart';
-import 'homePage.dart';
+import 'home_page.dart';
+import 'my_stats.dart';
 import 'settings.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -40,7 +41,7 @@ class Friend {
 }
 
 class _MyFriendScreenState extends State<MyFriendScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 2;
   List<Friend> friends = [];
   int number_friends = 6;
   String _sortByValue = "Ascending";
@@ -92,156 +93,114 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
   @override
   void initState() {
     super.initState();
-    fetchFriends();
+    //fetchFriends();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kLoginRegisterBtnColour
-            .withOpacity(0.9), // Set the background color
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(
-                  title: 'Home Page',
+        appBar: AppBar(
+          backgroundColor: kLoginRegisterBtnColour
+              .withOpacity(0.9), // Set the background color
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(
+                    title: 'Home Page',
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
-      ),
-      body: CustomGradientContainerSoft(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              Container(
-                width: double.infinity,
-                child: const Text(
-                  "Friends",
-                  style: kSubTitleOfPage,
-                  textAlign: TextAlign.center,
+        body: CustomGradientContainerSoft(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                Container(
+                  width: double.infinity,
+                  child: const Text(
+                    "Friends",
+                    style: kSubTitleOfPage,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
-                child: Row(
-                  children: [
-                    Text("Total Friends: ${friends.length}",
-                        style: kSubSubTitleOfPage),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // Set the fill color here
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset:
-                                    Offset(0, 2), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: DropdownButton<String>(
-                            elevation: 10,
-                            iconSize: 30.0,
-                            iconDisabledColor:
-                                kLoginRegisterBtnColour.withOpacity(0.5),
-                            iconEnabledColor: kLoginRegisterBtnColour,
-                            value: _sortByValue,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _sortByValue = newValue!;
-                              });
-                            },
-                            dropdownColor: Color.fromRGBO(110, 45, 81, 0.8),
-                            items: ['Ascending', 'Recently Met']
-                                .map<DropdownMenuItem<String>>(
-                              (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(
-                                    value,
-                                    style: kSimpleTextWhite, // Set text color
-                                  ),
-                                );
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Text("Total Friends: ${friends.length}",
+                          style: kSubSubTitleOfPage),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              // Set the fill color here
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: Offset(
+                                      0, 2), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: DropdownButton<String>(
+                              elevation: 10,
+                              iconSize: 30.0,
+                              iconDisabledColor:
+                                  kLoginRegisterBtnColour.withOpacity(0.5),
+                              iconEnabledColor: kLoginRegisterBtnColour,
+                              value: _sortByValue,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _sortByValue = newValue!;
+                                });
                               },
-                            ).toList(),
+                              dropdownColor: Color.fromRGBO(110, 45, 81, 0.8),
+                              items: ['Ascending', 'Recently Met']
+                                  .map<DropdownMenuItem<String>>(
+                                (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: kSimpleTextWhite, // Set text color
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Column(
-                children: friends.map((friend) {
-                  return TransparentProfileButton(
-                    name: friend.name,
-                    mutualFriends: friend.mutualFriends,
-                  );
-                }).toList(),
-              ),
-            ],
+                Column(
+                  children: friends.map((friend) {
+                    return TransparentProfileButton(
+                      name: friend.name,
+                      mutualFriends: friend.mutualFriends,
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            switch (_currentIndex) {
-              case 0:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomePage(
-                      title: "Home Page",
-                    ),
-                  ),
-                );
-                break;
-              case 1:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyFriendScreen(title: ''),
-                  ),
-                );
-                break;
-              case 2:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Setting(title: "Settings"),
-                  ),
-                );
-                break;
-            }
-          });
-        },
-        label1: 'Home',
-        label2: 'Friends',
-        label3: 'Settings',
-        icon1: Icons.home,
-        icon2: Icons.group,
-        icon3: Icons.settings,
-        currentIndex: _currentIndex,
-      ),
-    );
+        bottomNavigationBar: BottomNavBar(initialIndex: _currentIndex));
   }
 }
 
