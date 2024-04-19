@@ -3,6 +3,7 @@ import 'package:phone_app/components/bottom_button.dart';
 import 'package:phone_app/utilities/constants.dart';
 import '../components/main_app_background.dart';
 import 'contact.dart';
+import 'home_page.dart';
 
 class InformationScreen extends StatelessWidget {
   @override
