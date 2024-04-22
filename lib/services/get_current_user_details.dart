@@ -70,6 +70,7 @@ class UserDetailsFetcher {
 
           // Create a UserDetails object
           UserDetails userDetails = UserDetails(
+            id: responseData['id'] ?? '',
             name: responseData['name'] ?? '',
             surname: responseData['surname'] ?? '',
             username: responseData['username'] ?? '',

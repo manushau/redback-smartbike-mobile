@@ -106,7 +106,7 @@ class _TimerPageState extends State<TimerPage> {
             ElevatedButton(
               onPressed: _togglePause,
               style: ElevatedButton.styleFrom(
-                primary: Colors.black,
+                backgroundColor: Colors.black,
                 minimumSize: Size(160, 60),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -118,7 +118,7 @@ class _TimerPageState extends State<TimerPage> {
             ElevatedButton(
               onPressed: _startStopTimer,
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                backgroundColor: Colors.red,
                 minimumSize: Size(160, 60),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
