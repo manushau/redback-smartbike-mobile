@@ -52,50 +52,69 @@ class TerminateState extends State<Terminate> {
         ],
       ),
       body: CustomGradientContainerSoft(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              DropdownButtonFormField<String>(
-                value: _selectedReason,
-                decoration: InputDecoration(
-                  labelText: 'Reason for Termination',
-                  border: OutlineInputBorder(),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                DropdownButtonFormField<String>(
+                  value: _selectedReason,
+                  decoration: InputDecoration(
+                    labelText: 'Reason for Termination *', // Mark as required
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 2), // Bold border
+                    ),
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedReason = newValue!;
+                    });
+                  },
+                  items: _reasons.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+                    );
+                  }).toList(),
                 ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedReason = newValue!;
-                  });
-                },
-                items: _reasons.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _additionalReasonController,
-                decoration: InputDecoration(
-                  labelText: 'Additional Details',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _additionalReasonController,
+                  decoration: InputDecoration(
+                    labelText: 'Additional Details *', // Mark as required
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 2), // Bold border
+                    ),
+                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _showConfirmDialog,
-                child: Text('Terminate Account'),
-              ),
-            ],
+                SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      textStyle: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: _showConfirmDialog,
+                    child: Text('Terminate Account'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: BottomNavBar(initialIndex: _currentIndex),
     );
   }
+
 
   void _showConfirmDialog() {
     showDialog(
