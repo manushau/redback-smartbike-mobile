@@ -7,7 +7,11 @@ import 'package:phone_app/utilities/constants.dart';
 import 'package:phone_app/components/bottom_navigation_bar.dart';
 import 'package:phone_app/components/main_app_background.dart';
 import 'package:phone_app/provider/data_provider.dart';
-import 'package:phone_app/models/user_details.dart'; // Ensure you have UserDetails class correctly set up
+import 'package:phone_app/models/user_details.dart';
+
+import '../components/bottom_button.dart';
+import '../components/dropdown_choice.dart';
+import '../components/input_text_field.dart'; // Ensure you have UserDetails class correctly set up
 
 class Terminate extends StatefulWidget {
   const Terminate({Key? key}) : super(key: key);
@@ -30,8 +34,6 @@ class TerminateState extends State<Terminate> {
 
   @override
   Widget build(BuildContext context) {
-    // Fetch user email from UserDataProvider
-    final userEmail = Provider.of<UserDataProvider>(context).userDetails?.email ?? "No Email Provided";
     final userId = Provider.of<UserDataProvider>(context).userDetails?.id ?? "No ID Provided";
 
     return Scaffold(
@@ -39,82 +41,64 @@ class TerminateState extends State<Terminate> {
         backgroundColor: kLoginRegisterBtnColour.withOpacity(0.9),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text("Terminate Account"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Center(child: Text(userId)),
-          ),
-        ],
+        //title: Text("Terminate Account"),
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        //     child: Center(child: Text(userId)),
+        //   ),
+        // ],
       ),
       body: CustomGradientContainerSoft(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                DropdownButtonFormField<String>(
-                  value: _selectedReason,
-                  decoration: InputDecoration(
-                    labelText: 'Reason for Termination *', // Mark as required
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(width: 2), // Bold border
-                    ),
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedReason = newValue!;
-                    });
-                  },
-                  items: _reasons.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _additionalReasonController,
-                  decoration: InputDecoration(
-                    labelText: 'Additional Details *', // Mark as required
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(width: 2), // Bold border
-                    ),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  maxLines: 3,
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      textStyle: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: _showConfirmDialog,
-                    child: Text('Terminate Account'),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 30.0, 0),
+                child: const Center(
+                  child: Text(
+                    "Terminate Account",
+                    style: kSubTitleOfPage,
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 20),
+              DropdownChoice(
+                onChange: (String? newValue) {
+                  setState(() {
+                    _selectedReason = newValue!;
+                  });
+                },
+                items: _reasons.map((reason) => DropdownMenuItem<String>(
+                  value: reason,
+                  child: Text(reason, style: kSimpleTextPurple),
+                )).toList(),
+                selectedValue: _selectedReason,
+                helperText: 'Reason for Termination',
+              ),
+              SizedBox(height: 20),
+              InputTextField(
+                buttonText: 'Additional Details',
+                fieldController: _additionalReasonController,
+                height: 200,
+              ),
+              SizedBox(height: 50),
+              BottomButton(
+                onTap: _showConfirmDialog,
+                buttonText: 'Terminate',
+              ),
+              SizedBox(height: 20),
+            ],
           ),
         ),
       ),
       bottomNavigationBar: BottomNavBar(initialIndex: _currentIndex),
     );
   }
-
 
   void _showConfirmDialog() {
     showDialog(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/input_text_field.dart';
+import 'package:phone_app/components/password_reset_page.dart';
 import 'package:provider/provider.dart';
 import '../models/user_details.dart';
 import '../provider/data_provider.dart';
@@ -145,7 +146,16 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 15),
                 if (errorMessage.isNotEmpty)
                   Text(errorMessage, style: TextStyle(color: Colors.red)),
-                SizedBox(height: 55),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PasswordResetPage()),
+                    );
+                  },
+                  child: Text('Forgotten Password?', style: TextStyle(color: Colors.blue)),
+                ),
                 BottomButton(
                   onTap: () {
                     login(context);
