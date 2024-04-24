@@ -1,4 +1,5 @@
 class UserDetails {
+  String id;
   String name;
   String surname;
   String username;
@@ -8,6 +9,7 @@ class UserDetails {
   String imagePath;
 
   UserDetails({
+    required this.id,
     required this.name,
     required this.surname,
     required this.username,

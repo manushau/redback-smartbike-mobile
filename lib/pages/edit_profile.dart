@@ -22,6 +22,7 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileActivityState extends State<EditProfile> {
+  TextEditingController _idController = TextEditingController();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
@@ -47,6 +48,7 @@ class _EditProfileActivityState extends State<EditProfile> {
     if (userDetails != null) {
       // Update user details text fields
       setState(() {
+        _idController.text = userDetails.id ?? '';
         _firstNameController.text = userDetails.name ?? '';
         _lastNameController.text = userDetails.surname ?? '';
         _usernameController.text = userDetails.username ?? '';
@@ -93,6 +95,7 @@ class _EditProfileActivityState extends State<EditProfile> {
 
       // Prepare the data you want to send in the PUT request
       var request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
+      request.fields['id'] = _idController.text;
       request.fields['username'] = _usernameController.text;
       request.fields['name'] = _firstNameController.text;
       request.fields['surname'] = _lastNameController.text;
@@ -129,6 +132,7 @@ class _EditProfileActivityState extends State<EditProfile> {
           print('Profile updated successfully');
           // Update user details in provider
           UserDetails updatedUserDetails = UserDetails(
+            id: _idController.text,
             name: _firstNameController.text,
             surname: _lastNameController.text,
             username: _usernameController.text,

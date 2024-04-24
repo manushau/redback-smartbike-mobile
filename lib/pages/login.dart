@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/input_text_field.dart';
@@ -37,20 +39,20 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController idController = TextEditingController();
   String errorMessage = '';
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    idController.dispose();
     super.dispose();
   }
 
   Future<void> login(BuildContext context) async {
     await dotenv.load(fileName: ".env");
-// Retrieve the API URL from the environment variables
-    String? baseURL = dotenv.env[
-        'API_URL_BASE']; // only the partial, network specific to each team member
+    String? baseURL = dotenv.env['API_URL_BASE'];
     final apiUrl = '$baseURL/login/';
 
     final response = await http.post(
@@ -58,17 +60,21 @@ class _LoginPageState extends State<LoginPage> {
       body: {
         'email': emailController.text,
         'password': passwordController.text,
+        'id': idController.text,
       },
     );
 
     if (response.statusCode == 200) {
-      await UserDetailsFetcher.fetchUserDetails(context, emailController.text);
+      var responseData = jsonDecode(response.body);
+      var userEmail = responseData['email'];
+      String userId = responseData['id'].toString(); // Convert int to String here
+
+      // Now use the string userId to set user data
+      Provider.of<UserDataProvider>(context, listen: false).setUserEmail(userEmail);
+      Provider.of<UserDataProvider>(context, listen: false).setUserId(userId);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            // when auth is correct, pass that email to HomePage, where we fetch other user details
-            // that are currently saved under that email across tables in Django
-            builder: (context) => HomePage(title: 'Home Page')),
+        MaterialPageRoute(builder: (context) => HomePage(title: 'Home Page')),
       );
     } else {
       String message;
