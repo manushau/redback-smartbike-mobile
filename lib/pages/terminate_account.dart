@@ -24,7 +24,8 @@ class TerminateState extends State<Terminate> {
   int _currentIndex = 1;
   final TextEditingController _passwordController = TextEditingController();
   String? _selectedReason;
-  final TextEditingController _additionalReasonController = TextEditingController();
+  final TextEditingController _additionalReasonController =
+      TextEditingController();
   final List<String> _reasons = [
     'Poor Service',
     'Found a Better Service',
@@ -34,13 +35,17 @@ class TerminateState extends State<Terminate> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = Provider.of<UserDataProvider>(context).userDetails?.id ?? "No ID Provided";
+    final userId = Provider.of<UserDataProvider>(context).userDetails?.id ??
+        "No ID Provided";
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kLoginRegisterBtnColour.withOpacity(0.9),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         //title: Text("Terminate Account"),
@@ -73,10 +78,12 @@ class TerminateState extends State<Terminate> {
                     _selectedReason = newValue!;
                   });
                 },
-                items: _reasons.map((reason) => DropdownMenuItem<String>(
-                  value: reason,
-                  child: Text(reason, style: kSimpleTextPurple),
-                )).toList(),
+                items: _reasons
+                    .map((reason) => DropdownMenuItem<String>(
+                          value: reason,
+                          child: Text(reason, style: kSimpleTextPurple),
+                        ))
+                    .toList(),
                 selectedValue: _selectedReason,
                 helperText: 'Reason for Termination',
               ),
@@ -140,14 +147,17 @@ class TerminateState extends State<Terminate> {
     await dotenv.load(fileName: ".env");
     String? baseURL = dotenv.env['API_URL_BASE'];
     // Fetch user ID from UserDataProvider
-    final userId = Provider.of<UserDataProvider>(context, listen: false).userDetails?.id ?? "No ID Provided";
+    final userId =
+        Provider.of<UserDataProvider>(context, listen: false).userDetails?.id ??
+            "No ID Provided";
 
     if (userId == "No ID Provided") {
       print("User ID is not provided. Cannot terminate account.");
       return; // Exit the function if no user ID is provided
     }
 
-    final apiUrl = '$baseURL/warehouse/$userId?password=${_passwordController.text}'; // Correct endpoint to terminate
+    final apiUrl =
+        '$baseURL/warehouse/$userId?password=${_passwordController.text}'; // Correct endpoint to terminate
 
     final response = await http.get(
       Uri.parse(apiUrl),
@@ -155,15 +165,18 @@ class TerminateState extends State<Terminate> {
         'Content-Type': 'application/json',
         //'Authorization': 'Bearer ${_passwordController.text}', // Use proper authorization
       },
-
     );
 
-    if (response.statusCode == 204) { // Assuming 204 No Content for successful deletion
+    if (response.statusCode == 204) {
+      // Assuming 204 No Content for successful deletion
       _showSuccessPopup();
-    } else if (response.statusCode == 403) { // Forbidden or Unauthorized
-      _showErrorPopup("Incorrect password. Cannot delete account. Please try again.");
+    } else if (response.statusCode == 403) {
+      // Forbidden or Unauthorized
+      _showErrorPopup(
+          "Incorrect password. Cannot delete account. Please try again.");
     } else {
-      _showErrorPopup("Failed to terminate account: Incorrect password. Cannot delete account. Please try again.");
+      _showErrorPopup(
+          "Failed to terminate account: Incorrect password. Cannot delete account. Please try again.");
     }
   }
 

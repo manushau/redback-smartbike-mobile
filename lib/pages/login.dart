@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/input_text_field.dart';
-import 'package:phone_app/components/password_reset_page.dart';
+import 'package:phone_app/pages/password_reset_page.dart';
 import 'package:provider/provider.dart';
 import '../models/user_details.dart';
 import '../provider/data_provider.dart';
@@ -68,10 +68,12 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var responseData = jsonDecode(response.body);
       var userEmail = responseData['email'];
-      String userId = responseData['id'].toString(); // Convert int to String here
+      String userId =
+          responseData['id'].toString(); // Convert int to String here
 
       // Now use the string userId to set user data
-      Provider.of<UserDataProvider>(context, listen: false).setUserEmail(userEmail);
+      Provider.of<UserDataProvider>(context, listen: false)
+          .setUserEmail(userEmail);
       Provider.of<UserDataProvider>(context, listen: false).setUserId(userId);
       Navigator.pushReplacement(
         context,
@@ -151,10 +153,12 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PasswordResetPage()),
+                      MaterialPageRoute(
+                          builder: (context) => PasswordResetPage()),
                     );
                   },
-                  child: Text('Forgotten Password?', style: TextStyle(color: Colors.blue)),
+                  child: Text('Forgotten Password?',
+                      style: TextStyle(color: Colors.blue)),
                 ),
                 BottomButton(
                   onTap: () {
