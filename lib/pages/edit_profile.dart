@@ -5,9 +5,7 @@ import 'package:phone_app/components/bottom_button.dart';
 import 'package:phone_app/utilities/constants.dart';
 import '../components/main_app_background.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../components/user_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/user_details.dart';
@@ -126,9 +124,8 @@ class _EditProfileActivityState extends State<EditProfile> {
         // Send the PUT request
         var streamedResponse = await request.send();
 
-        // Handle the response
+        // response ok
         if (streamedResponse.statusCode == 200) {
-          // Handle success here if needed
           print('Profile updated successfully');
           // Update user details in provider
           UserDetails updatedUserDetails = UserDetails(
@@ -140,12 +137,20 @@ class _EditProfileActivityState extends State<EditProfile> {
             dob: _dobController.text,
             phoneNumber: _phoneNoController.text,
             imagePath: imagePath,
-            // Update with image path if needed
           );
           if (mounted) {
             Provider.of<UserDataProvider>(context, listen: false)
-                .setUserDetails(updatedUserDetails);
-            // Notify listeners after updating user details
+                .updateUserDetails(
+              id: _idController.text,
+              name: _firstNameController.text,
+              surname: _lastNameController.text,
+              username: _usernameController.text,
+              email: _emailController.text,
+              dob: _dobController.text,
+              phoneNumber: _phoneNoController.text,
+              imagePath: imagePath,
+            );
+            // notify listeners after updating user details
             Provider.of<UserDataProvider>(context, listen: false)
                 .notifyListeners();
           }

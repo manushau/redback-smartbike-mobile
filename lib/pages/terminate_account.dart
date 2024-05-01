@@ -8,10 +8,10 @@ import 'package:phone_app/components/bottom_navigation_bar.dart';
 import 'package:phone_app/components/main_app_background.dart';
 import 'package:phone_app/provider/data_provider.dart';
 import 'package:phone_app/models/user_details.dart';
-
 import '../components/bottom_button.dart';
 import '../components/dropdown_choice.dart';
 import '../components/input_text_field.dart'; // Ensure you have UserDetails class correctly set up
+import 'dart:convert';
 
 class Terminate extends StatefulWidget {
   const Terminate({Key? key}) : super(key: key);
@@ -27,6 +27,7 @@ class TerminateState extends State<Terminate> {
   final TextEditingController _additionalReasonController =
       TextEditingController();
   final List<String> _reasons = [
+    // those need to match the options in views in Django
     'Poor Service',
     'Found a Better Service',
     'Privacy Concerns',
@@ -144,39 +145,82 @@ class TerminateState extends State<Terminate> {
   }
 
   Future<void> _terminateAccount(String password) async {
+    // get network details from .env file
     await dotenv.load(fileName: ".env");
     String? baseURL = dotenv.env['API_URL_BASE'];
-    // Fetch user ID from UserDataProvider
-    final userId =
-        Provider.of<UserDataProvider>(context, listen: false).userDetails?.id ??
-            "No ID Provided";
 
-    if (userId == "No ID Provided") {
-      print("User ID is not provided. Cannot terminate account.");
+    // Fetch user ID from UserDataProvider
+    final userEmail = Provider.of<UserDataProvider>(context, listen: false)
+            .userDetails
+            ?.email ??
+        "Cannot fetch the user details";
+    print(userEmail);
+    if (userEmail == "Cannot fetch the user details") {
+      print("User detail is not provided. Cannot terminate account.");
       return; // Exit the function if no user ID is provided
     }
+    final enteredPassword = _passwordController.text;
+    print('pass: $password');
+    final authPasswordUrl =
+        '$baseURL/user/authenticate/$userEmail/?password=$enteredPassword'; // Correct endpoint to terminate
 
-    final apiUrl =
-        '$baseURL/warehouse/$userId?password=${_passwordController.text}'; // Correct endpoint to terminate
-
-    final response = await http.get(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        //'Authorization': 'Bearer ${_passwordController.text}', // Use proper authorization
-      },
+    // 1. check the password against database
+    final authResponse = await http.get(
+      Uri.parse(authPasswordUrl),
     );
 
-    if (response.statusCode == 204) {
-      // Assuming 204 No Content for successful deletion
-      _showSuccessPopup();
-    } else if (response.statusCode == 403) {
+    // 2. if password matches save the contents of the terminate page fields
+    if (authResponse.statusCode == 200) {
+      // 200 OK should match the backend views
+      final messageUrl = '$baseURL/save_ta_message/';
+      final messageResponse = await http.post(
+        Uri.parse(messageUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'reason': _selectedReason,
+          'message_body': _additionalReasonController.text,
+          'submitted_at': DateTime.now().toIso8601String(),
+          'reviewed': false,
+        }),
+      );
+
+      // 3. after the msg is saved (received status 201), delete the account:
+      if (messageResponse.statusCode == 201) {
+        final deleteUrl = '$baseURL/user/delete/$userEmail/';
+        final deleteResponse = await http.delete(
+          Uri.parse(deleteUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            //'Authorization': 'Bearer ${_passwordController.text}', // Use proper authorization
+          },
+        );
+
+        // 4. if we deleted successfully, we should get 204
+        if (deleteResponse.statusCode == 204) {
+          // Assuming 204 No Content for successful deletion
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignUpPage(),
+            ),
+          );
+          _showSuccessPopup();
+        } else {
+          _showErrorPopup(
+              "Failed to terminate account: Incorrect password. Cannot delete account. Please try again.");
+        }
+      } else {
+        _showErrorPopup("Failed to save message. Please try again.");
+      }
+    } else if (authResponse.statusCode == 403) {
       // Forbidden or Unauthorized
       _showErrorPopup(
           "Incorrect password. Cannot delete account. Please try again.");
     } else {
       _showErrorPopup(
-          "Failed to terminate account: Incorrect password. Cannot delete account. Please try again.");
+          "Failed to authenticate password. Please try again later.");
     }
   }
 
@@ -191,12 +235,6 @@ class TerminateState extends State<Terminate> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SignUpPage(),
-                  ),
-                );
               },
               child: Text('OK'),
             ),

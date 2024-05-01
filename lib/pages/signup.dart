@@ -122,13 +122,14 @@ class _SignUpPageState extends State<SignUpPage> {
       final response = await http.post(
         Uri.parse(apiUrl),
         body: {
-          'user': usernameController.text,
           'email': emailController.text,
-          'password': passwordController.text
+          'username': usernameController.text,
+          'password': passwordController.text,
+          'user_created': DateTime.now().toIso8601String(), // record exact d&t
         },
       );
 
-      if (response.statusCode == 302) {
+      if (response.statusCode == 201) {
         print('Sign-up successful!');
       } else {
         print('Sign-up failed. Status code: ${response.statusCode}');
@@ -198,58 +199,28 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: _showPasswordRequirementsDialog,
                     child: Text(
                       'Password Requirements',
-                      style: TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.underline,
-                      ),
+                      style: kSubTitleLoginStatic,
                     ),
                   ),
                   SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: BottomButton(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              signUp();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              );
-                            } else {
-                              _showErrorSnackbar('Please correct the errors');
-                            }
-                          },
-                          buttonText: 'Sign Up',
-                        ),
-                      ),
-                      SizedBox(width: 10), // Add some spacing
-                      Expanded(
-                        child: BottomButton(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginPage(),
-                              ),
-                            );
-                          },
-                          buttonText: 'Log In',
-                        ),
-                      ),
-                    ],
+                  BottomButton(
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {
+                        signUp();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      } else {
+                        _showErrorSnackbar('Please correct the errors');
+                      }
+                    },
+                    buttonText: 'Sign Up',
                   ),
+                  SizedBox(width: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Already have an account?  ',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
                       TextTapButton(
                         onTap: () {
                           Navigator.push(
@@ -259,6 +230,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           );
                         },
+                        buttonTextStatic: 'Already have an account?',
                         buttonTextActive: 'Click',
                       ),
                     ],

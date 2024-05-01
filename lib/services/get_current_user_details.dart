@@ -68,8 +68,9 @@ class UserDetailsFetcher {
           // Print or process the user details
           print('User details: $responseData');
 
-          // Create a UserDetails object
-          UserDetails userDetails = UserDetails(
+          // set values in provider
+          Provider.of<UserDataProvider>(context, listen: false)
+              .updateUserDetails(
             id: responseData['id'] ?? '',
             name: responseData['name'] ?? '',
             surname: responseData['surname'] ?? '',
@@ -80,10 +81,6 @@ class UserDetailsFetcher {
             imagePath: imagePath ?? '',
             // Add constructor parameters for additional fields
           );
-
-          // Set user details in provider
-          Provider.of<UserDataProvider>(context, listen: false)
-              .setUserDetails(userDetails);
         } else {
           // Handle errors here
           print('Failed to get user details: ${response.statusCode}');

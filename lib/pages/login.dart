@@ -67,14 +67,34 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       var responseData = jsonDecode(response.body);
-      var userEmail = responseData['email'];
-      String userId =
-          responseData['id'].toString(); // Convert int to String here
+      var username =
+          responseData.containsKey('username') ? responseData['username'] : '';
+      var email = responseData['email'] ?? '';
+      var name = responseData['name'] ?? '';
+      var surname = responseData['surname'] ?? '';
+      var dob = responseData['dob'] ?? '';
+      var phone_number = responseData['phone_number'] ?? '';
+      var image = responseData['image'] ?? '';
+      String id = responseData['id'].toString(); // Convert int to String here
 
-      // Now use the string userId to set user data
-      Provider.of<UserDataProvider>(context, listen: false)
-          .setUserEmail(userEmail);
-      Provider.of<UserDataProvider>(context, listen: false).setUserId(userId);
+      print('$responseData');
+      // see Django views 'login_view' Response
+      var accountDetails = responseData['account_details'][0];
+      // save all to the Provider, so that we have all details for current user. Also Provider distributes data across the widgets
+      Provider.of<UserDataProvider>(context, listen: false).updateUserDetails(
+        email: accountDetails['email'],
+        username: accountDetails['username'],
+        name: accountDetails['name'],
+        surname: accountDetails['surname'],
+        dob: accountDetails['dob'],
+        phoneNumber: accountDetails['phone_number'],
+        imagePath: accountDetails['image'],
+        id: id,
+      );
+
+      // broadcast those changes
+      Provider.of<UserDataProvider>(context, listen: false).notifyListeners();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage(title: 'Home Page')),
@@ -157,8 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => PasswordResetPage()),
                     );
                   },
-                  child: Text('Forgotten Password?',
-                      style: TextStyle(color: Colors.blue)),
+                  child:
+                      Text('Forgotten Password?', style: kSubTitleLoginStatic),
                 ),
                 BottomButton(
                   onTap: () {

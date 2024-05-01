@@ -211,6 +211,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         Provider.of<UserDataProvider>(context, listen: false).userDetails;
     if (userDetails == null) {
       // TODO: Handle error or show message that user details are not available
+      print("User ID is not provided. Cannot proceed.");
       return;
     }
 
@@ -223,17 +224,14 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       final response = await http.post(
         Uri.parse(apiUrl),
         body: json.encode({
-          'thread_number':
-              _threadNumber, // UUID generated in Flutter; each thread of messages (case)should have one, same UUID
+          // the rest of the values from Django model are either nullable or have default values set;
+          // UUID generated in Flutter; each thread of messages (case)should have one, same UUID
+          'thread_number': _threadNumber,
           'email': userDetails.email,
           'subject': _subject,
           'topic': selectedValue,
           'message_body': _message,
           'timestamp_sent': DateTime.now().toIso8601String(),
-          'timestamp_read': DateTime.now().toIso8601String(),
-          'is_read': false,
-          'status': 'Open',
-          'actions': 'Awaiting Review',
         }),
         headers: {'Content-Type': 'application/json'},
       );
