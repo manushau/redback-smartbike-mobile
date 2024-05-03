@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 
 class UserDetailsFetcher {
   static Future<void> fetchUserDetails(

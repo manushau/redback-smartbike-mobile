@@ -1,13 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/input_text_field.dart';
 import 'package:phone_app/pages/password_reset_page.dart';
 import 'package:provider/provider.dart';
-import '../models/user_details.dart';
-import '../provider/data_provider.dart';
-import '../services/get_current_user_details.dart';
+import '../provider/user_data_provider.dart';
 import 'home_page.dart';
 import 'package:phone_app/components/bottom_button.dart';
 import 'package:phone_app/components/text_tap_button.dart';
@@ -67,14 +64,8 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       var responseData = jsonDecode(response.body);
-      var username =
-          responseData.containsKey('username') ? responseData['username'] : '';
-      var email = responseData['email'] ?? '';
-      var name = responseData['name'] ?? '';
-      var surname = responseData['surname'] ?? '';
-      var dob = responseData['dob'] ?? '';
-      var phone_number = responseData['phone_number'] ?? '';
-      var image = responseData['image'] ?? '';
+
+      // ID is generated in Django: models.py -> MyUser
       String id = responseData['id'].toString(); // Convert int to String here
 
       print('$responseData');

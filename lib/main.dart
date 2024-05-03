@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:phone_app/provider/wrk_type_provider.dart';
 import 'pages/login.dart';
 // for passing user data throughout the app:
 import 'package:provider/provider.dart';
-import 'provider/data_provider.dart';
+import 'provider/user_data_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserDataProvider()),
+        ChangeNotifierProvider(create: (context) => WorkoutTypeProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:phone_app/pages/set_workout_page.dart';
-import 'package:phone_app/utilities/constants.dart';
+import 'package:provider/provider.dart';
 import '../components/main_app_background.dart';
-import '../services/timer.dart';
 import '../components/activity_buttons.dart';
-import 'vr_workout.dart';
+import '../provider/wrk_type_provider.dart'; // save current workout settings
 
 class MyWorkout extends StatefulWidget {
   const MyWorkout({Key? key, required this.title}) : super(key: key);
@@ -35,6 +34,9 @@ class _MyWorkoutState extends State<MyWorkout> {
                       children: [
                         ActivityButton(
                           onTap: () {
+                            Provider.of<WorkoutTypeProvider>(context,
+                                    listen: false)
+                                .updateWorkoutType(name: 'VR Game');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -49,7 +51,7 @@ class _MyWorkoutState extends State<MyWorkout> {
                         SizedBox(height: 10),
                         ActivityButton(
                           onTap: () {},
-                          buttonText: 'Walking',
+                          buttonText: 'Cycling',
                           width: 300,
                         ),
                         SizedBox(height: 10),
@@ -67,7 +69,7 @@ class _MyWorkoutState extends State<MyWorkout> {
                         SizedBox(height: 10), // Sports button
                         ActivityButton(
                           onTap: () {},
-                          buttonText: 'Sports',
+                          buttonText: 'Pilates',
                           width: 300,
                         ),
                         SizedBox(height: 10), // Aerobic button
@@ -79,7 +81,7 @@ class _MyWorkoutState extends State<MyWorkout> {
                         SizedBox(height: 10), // Jumba button
                         ActivityButton(
                           onTap: () {},
-                          buttonText: 'Jumba',
+                          buttonText: 'High Intensity',
                           width: 300,
                         ),
                         SizedBox(height: 60),

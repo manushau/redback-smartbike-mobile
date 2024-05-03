@@ -57,7 +57,7 @@ const kSubSubTitleOfPage = TextStyle(
 );
 
 const kSimpleTextWhite = TextStyle(
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: FontWeight.normal,
   color: Colors.white,
 );

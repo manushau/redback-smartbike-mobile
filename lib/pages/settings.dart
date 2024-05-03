@@ -13,7 +13,7 @@ import 'message_center.dart';
 import 'Friends.dart';
 import 'home_page.dart';
 import 'contact.dart';
-import 'information.dart';
+import 'about_us.dart';
 import 'my_stats.dart';
 
 class Setting extends StatefulWidget {
@@ -45,19 +45,18 @@ class _Setting extends State<Setting> {
               );
             },
           ),
+          title: Text(
+            'Settings',
+            style: kSubSubTitleOfPage,
+          ),
+          centerTitle: true,
         ),
         body: CustomGradientContainerSoft(
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 50),
-                Text(
-                  "Settings",
-                  style: kSubTitleOfPage,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 40),
+                SizedBox(height: 80),
                 AccountContainer(
                   fieldName: 'Account',
                   typeIcon: Icons.account_circle,
@@ -87,7 +86,7 @@ class _Setting extends State<Setting> {
                 ),
                 SizedBox(height: 10),
                 AccountContainer(
-                  fieldName: 'Information',
+                  fieldName: 'About Us',
                   typeIcon: Icons.info,
                   onPressed: () {
                     Navigator.push(

@@ -29,6 +29,11 @@ class PrivacyState extends State<Privacy> {
             Navigator.of(context).pop();
           },
         ),
+        title: Text(
+          'Privacy',
+          style: kSubSubTitleOfPage,
+        ),
+        centerTitle: true,
       ),
       body: CustomGradientContainerSoft(
         child: Center(
@@ -39,12 +44,6 @@ class PrivacyState extends State<Privacy> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    height: 40, // Fixed height for the "Privacy" text
-                    child: Center(
-                      child: Text('Privacy', style: kSubTitleOfPage),
-                    ),
-                  ),
                   SizedBox(height: 60),
                   Row(
                     children: [

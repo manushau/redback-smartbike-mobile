@@ -6,7 +6,7 @@ import '../components/bottom_navigation_bar.dart';
 import '../components/main_app_background.dart';
 import 'Friends.dart';
 import 'home_page.dart';
-import 'information.dart';
+import 'about_us.dart';
 import 'contact.dart';
 import 'email.dart';
 import 'login.dart';

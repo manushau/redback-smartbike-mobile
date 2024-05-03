@@ -1,10 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:phone_app/components/bottom_button.dart';
 import 'package:phone_app/pages/workout_summary.dart';
 import 'package:phone_app/utilities/constants.dart';
+import 'package:provider/provider.dart';
 import '../components/main_app_background.dart';
+import '../components/workout_metric_box.dart';
+import '../models/workout_type.dart';
+import '../provider/user_data_provider.dart';
+import '../provider/wrk_type_provider.dart';
 import '../services/workout_values_generator.dart';
+import 'package:http/http.dart' as http;
+
+// TODO: in Django models change the user, workout_type to not be null
 
 class Workout extends StatefulWidget {
   const Workout({Key? key, required this.title}) : super(key: key);
@@ -18,6 +28,7 @@ class _WorkoutState extends State<Workout> {
   late Timer _timer = Timer(Duration.zero, () {});
   int _elapsedSeconds = 0;
   bool _isRunning = false;
+  late String _sessionId;
 
   // random values declared
   late double speedVal;
@@ -90,6 +101,9 @@ class _WorkoutState extends State<Workout> {
     heartRateVal = WorkoutValues.generateHeartRate(speedVal);
     temperatureVal = WorkoutValues.generateTemperature(speedVal, 1);
     inclineVal = WorkoutValues.generateIncline(1);
+
+    // send the data to backend every second
+    sendWorkoutData();
 
     return Scaffold(
       appBar: AppBar(
@@ -274,58 +288,53 @@ class _WorkoutState extends State<Workout> {
       ),
     );
   }
-}
 
-//TODO: check what the below does and implement
+  Future<String> getSessionId() async {
+    return Provider.of<WorkoutTypeProvider>(context, listen: false)
+        .workoutType!
+        .sessionId!;
+  }
 
-class WorkoutMetricBox extends StatelessWidget {
-  final String label;
-  final String value;
+  // Send a POST request to Django
+  void sendWorkoutData() async {
+    // retrieve the base URL from the environment variables
+    await dotenv.load(fileName: ".env");
+    String? baseURL = dotenv.env['API_URL_BASE'];
 
-  WorkoutMetricBox({required this.label, required this.value});
+    // retrieve the current session_id that was generated in the last page
+    _sessionId = await getSessionId();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      width: double.infinity,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: Container(
-          color: Colors.white.withOpacity(0.3),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                color: kHomeBtnColours.withOpacity(0.4),
-                padding: EdgeInsets.all(8),
-                child: Center(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Center(
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // 2. Send the workout settings to Django; there a session_id is also generated and the subsequent data points from workout itself will
+    // also have that session_id so that you can match both tables
+
+    if (baseURL != null) {
+      String apiUrl = '$baseURL/workoutdata/';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode({
+          // there is a session_id that will be generated in Django
+          'speed': double.parse(speedVal.toStringAsFixed(2)),
+          'rpm': rpmVal,
+          'distance': double.parse(distanceVal.toStringAsFixed(2)),
+          'heart_rate': heartRateVal,
+          'temperature': double.parse(temperatureVal.toStringAsFixed(2)),
+          'incline': inclineVal,
+          'timestamp': DateTime.now().toIso8601String(),
+          'session_id': _sessionId,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (mounted) {
+        // make sure we send the msg first, then dispose of widget
+        if (response.statusCode == 201) {
+          print('Workout settings sent successfully');
+        } else {
+          print(
+              'Error sending message: ${response.body} ${response.statusCode} ');
+        }
+      }
+    } else {
+      print('BASE_URL is not defined in .env file');
+    }
   }
 }

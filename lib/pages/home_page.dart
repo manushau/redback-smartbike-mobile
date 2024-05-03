@@ -15,7 +15,7 @@ import '../components/bottom_navigation_bar.dart';
 import '../components/main_app_background.dart';
 import '../components/stats_container.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 import 'Friends.dart';
 import 'my_workout.dart';
 import 'package:phone_app/pages/settings.dart';

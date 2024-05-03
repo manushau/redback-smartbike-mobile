@@ -18,6 +18,11 @@ class InformationScreen extends StatelessWidget {
             Navigator.of(context).pop();
           },
         ),
+        title: Text(
+          'About Us',
+          style: kSubSubTitleOfPage,
+        ),
+        centerTitle: true,
       ),
       body: CustomGradientContainerSoft(
         child: Padding(
@@ -25,15 +30,6 @@ class InformationScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: Text(
-                    "Information",
-                    style: kSubTitleOfPage,
-                  ),
-                ),
-              ),
               SizedBox(height: 16),
               Text(
                 "Redback Operation Mission",

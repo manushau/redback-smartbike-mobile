@@ -8,7 +8,7 @@ import 'package:phone_app/utilities/constants.dart';
 import 'package:provider/provider.dart';
 import '../components/dropdown_choice.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -117,6 +117,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             Navigator.of(context).pop();
           },
         ),
+        title: Text(
+          'Contact Us',
+          style: kSubSubTitleOfPage,
+        ),
+        centerTitle: true,
       ),
       body: CustomGradientContainerSoft(
         child: Center(
@@ -124,15 +129,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 30.0, 0),
-                  child: const Center(
-                    child: Text(
-                      "Contact Us",
-                      style: kSubTitleOfPage,
-                    ),
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.fromLTRB(16.0, 16.0, 8.0, 16.0),
                   child: Center(

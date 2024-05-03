@@ -11,7 +11,7 @@ import 'package:phone_app/pages/settings.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 import '../utilities/constants.dart';
 import 'edit_profile.dart';
 import 'login.dart';

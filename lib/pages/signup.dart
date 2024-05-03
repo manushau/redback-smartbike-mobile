@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       return 'Please enter your username';
     }
     if (value.length < 5) {
-      return 'Username must be at least 10 characters long';
+      return 'Username must be at least 5 characters long';
     }
     return null;
   }
@@ -130,9 +130,13 @@ class _SignUpPageState extends State<SignUpPage> {
       );
 
       if (response.statusCode == 201) {
-        print('Sign-up successful!');
+        print('User created successfully');
+      } else if (response.statusCode == 400) {
+        print('Failed to create user: ${response.body}');
+      } else if (response.statusCode == 409) {
+        print('Conflict: ${response.body}');
       } else {
-        print('Sign-up failed. Status code: ${response.statusCode}');
+        print('Unexpected status code: ${response.statusCode}');
       }
     }
   }

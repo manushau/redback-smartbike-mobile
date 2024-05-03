@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key, required this.title}) : super(key: key);
@@ -128,16 +128,6 @@ class _EditProfileActivityState extends State<EditProfile> {
         if (streamedResponse.statusCode == 200) {
           print('Profile updated successfully');
           // Update user details in provider
-          UserDetails updatedUserDetails = UserDetails(
-            id: _idController.text,
-            name: _firstNameController.text,
-            surname: _lastNameController.text,
-            username: _usernameController.text,
-            email: _emailController.text,
-            dob: _dobController.text,
-            phoneNumber: _phoneNoController.text,
-            imagePath: imagePath,
-          );
           if (mounted) {
             Provider.of<UserDataProvider>(context, listen: false)
                 .updateUserDetails(
@@ -318,7 +308,7 @@ class _EditProfileActivityState extends State<EditProfile> {
   Widget _buildFormField(String fieldName, TextEditingController controller,
       {bool enableEditing = true}) {
     // First pass the values from GET request from backend
-    controller.text = controller.text.isEmpty ? 'N/A' : controller.text;
+    controller.text = controller.text.isEmpty ? '' : controller.text;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

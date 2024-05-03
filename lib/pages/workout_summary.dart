@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar.dart';
 import '../components/dropdown_choice.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 

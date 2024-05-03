@@ -18,9 +18,4 @@ class UserDetails {
     required this.phoneNumber,
     required this.imagePath,
   });
-
-  // update email
-  void updateEmail(String newEmail) {
-    email = newEmail;
-  }
 }

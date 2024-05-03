@@ -22,21 +22,19 @@ class _MyStatsState extends State<MyStats> {
         child: Scaffold(
       body: CustomGradientContainerSoft(
         child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 30.0, 0),
-                  child: const Center(
-                    child: Text(
-                      "My Stats",
-                      style: kSubTitleOfPage,
-                    ),
-                  ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
+                child: Row(
+                  children: [
+                    Text("My Stats", style: kSubSubTitleOfPage),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

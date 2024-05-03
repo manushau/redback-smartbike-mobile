@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../components/bottom_button.dart';
 import '../components/main_app_background.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 
 // TODO: figure out what possibly can we use this section for. I was here originally, but I deleted
 // TODO: its navigation path from Settings as it did not offer enough functionality
@@ -45,21 +45,17 @@ class _EmailScreenState extends State<EmailScreen> {
             Navigator.of(context).pop();
           },
         ),
+        title: Text(
+          'Registered emails',
+          style: kSubSubTitleOfPage,
+        ),
+        centerTitle: true,
       ),
       body: CustomGradientContainerSoft(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              child: Text(
-                "Registered Emails",
-                style: kSubTitleOfPage,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

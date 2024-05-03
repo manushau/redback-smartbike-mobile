@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../components/bottom_navigation_bar.dart';
 import '../components/dropdown_choice.dart';
 import '../models/user_details.dart';
-import '../provider/data_provider.dart';
+import '../provider/user_data_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -34,6 +34,11 @@ class _MessageCenterState extends State<MessageCenter> {
               Navigator.of(context).pop();
             },
           ),
+          title: Text(
+            'My Messages',
+            style: kSubSubTitleOfPage,
+          ),
+          centerTitle: true,
         ),
         body: CustomGradientContainerSoft(
           child: Center(
@@ -44,11 +49,8 @@ class _MessageCenterState extends State<MessageCenter> {
                   Container(
                     padding: const EdgeInsets.fromLTRB(16.0, 16.0, 30.0, 0),
                     child: const Center(
-                      child: Text(
-                        "My messages",
-                        style: kSubTitleOfPage,
-                      ),
-                    ),
+                        //TODO:  add stuff here
+                        ),
                   ),
                 ],
               ),

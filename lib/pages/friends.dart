@@ -116,6 +116,11 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
               );
             },
           ),
+          title: Text(
+            'My Friends',
+            style: kSubSubTitleOfPage,
+          ),
+          centerTitle: true,
         ),
         body: CustomGradientContainerSoft(
           child: Center(
@@ -123,14 +128,6 @@ class _MyFriendScreenState extends State<MyFriendScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                Container(
-                  width: double.infinity,
-                  child: const Text(
-                    "Friends",
-                    style: kSubTitleOfPage,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 60, horizontal: 16),
@@ -256,7 +253,8 @@ class TransparentProfileButton extends StatelessWidget {
             onPressed: () {},
             child: Text("Unfriend"),
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.red,
             ),
           ),
         ],

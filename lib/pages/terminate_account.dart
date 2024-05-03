@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:phone_app/utilities/constants.dart';
 import 'package:phone_app/components/bottom_navigation_bar.dart';
 import 'package:phone_app/components/main_app_background.dart';
-import 'package:phone_app/provider/data_provider.dart';
+import 'package:phone_app/provider/user_data_provider.dart';
 import 'package:phone_app/models/user_details.dart';
 import '../components/bottom_button.dart';
 import '../components/dropdown_choice.dart';
@@ -49,13 +49,11 @@ class TerminateState extends State<Terminate> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        //title: Text("Terminate Account"),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        //     child: Center(child: Text(userId)),
-        //   ),
-        // ],
+        title: Text(
+          'Terminate Account',
+          style: kSubSubTitleOfPage,
+        ),
+        centerTitle: true,
       ),
       body: CustomGradientContainerSoft(
         child: SingleChildScrollView(
@@ -63,16 +61,7 @@ class TerminateState extends State<Terminate> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 30.0, 0),
-                child: const Center(
-                  child: Text(
-                    "Terminate Account",
-                    style: kSubTitleOfPage,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
+              SizedBox(height: 80),
               DropdownChoice(
                 onChange: (String? newValue) {
                   setState(() {
